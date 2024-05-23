@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var decryptButton: Button
     private lateinit var algorithmSpinner: Spinner
 
+    // Erro
+    Today Error
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
