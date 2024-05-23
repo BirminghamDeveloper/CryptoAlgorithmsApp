@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var decryptButton: Button
     private lateinit var algorithmSpinner: Spinner
 
-    // Erro
-    Today Error
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        error deleted
 
         inputText = findViewById(R.id.inputText)
         outputText = findViewById(R.id.outputText)
