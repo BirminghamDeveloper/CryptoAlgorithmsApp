@@ -16,7 +16,161 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var inputText: EditText
+    private lateinit var outputText: TextView
+    private lateinit var encryptButton: Button
+    private lateinit var decryptButton: Button
+    private lateinit var algorithmSpinner: Spinner
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        inputText = findViewById(R.id.inputText)
+        outputText = findViewById(R.id.outputText)
+        encryptButton = findViewById(R.id.encryptButton)
+        decryptButton = findViewById(R.id.decryptButton)
+        algorithmSpinner = findViewById(R.id.algorithmSpinner)
+
+        val algorithms = arrayOf("Shift Cipher", "Monoalphabetic Cipher", "Affine Cipher",
+            "Playfair Cipher", "Vigenere Cipher", "Vernam Cipher", "SHA-1", "DES")
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, algorithms)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        algorithmSpinner.adapter = adapter
+
+        encryptButton.setOnClickListener {
+            val text = inputText.text.toString()
+            val algorithm = algorithmSpinner.selectedItem.toString()
+            val result = when (algorithm) {
+                "Shift Cipher" -> shiftCipher(text, encrypt = true)
+                "Monoalphabetic Cipher" -> monoalphabeticCipher(text, encrypt = true)
+                "Affine Cipher" -> affineCipher(text, encrypt = true)
+                "Playfair Cipher" -> playfairCipher(text, encrypt = true)
+                "Vigenere Cipher" -> vigenereCipher(text, "KEYWORD", encrypt = true)
+                "Vernam Cipher" -> vernamCipher(text, "KEYWORD", encrypt = true)
+                "SHA-1" -> sha1Hash(text)
+                "DES" -> desEncrypt(text)
+                else -> ""
+            }
+            outputText.text = result
+        }
+
+        decryptButton.setOnClickListener {
+            val text = inputText.text.toString()
+            val algorithm = algorithmSpinner.selectedItem.toString()
+            val result = when (algorithm) {
+                "Shift Cipher" -> shiftCipher(text, encrypt = false)
+                "Monoalphabetic Cipher" -> monoalphabeticCipher(text, encrypt = false)
+                "Affine Cipher" -> affineCipher(text, encrypt = false)
+                "Playfair Cipher" -> playfairCipher(text, encrypt = false)
+                "Vigenere Cipher" -> vigenereCipher(text, "KEYWORD", encrypt = false)
+                "Vernam Cipher" -> vernamCipher(text, "KEYWORD", encrypt = false)
+                "SHA-1" -> "Decryption not available"
+                "DES" -> desDecrypt(text)
+                else -> ""
+            }
+            outputText.text = result
+        }
+    }
+
+    private fun shiftCipher(text: String, encrypt: Boolean): String {
+        val shift = 3
+        return text.map {
+            if (it.isLetter()) {
+                val offset = if (it.isUpperCase()) 'A' else 'a'
+                val shiftAmount = if (encrypt) shift else -shift
+                ((it - offset + shiftAmount + 26) % 26 + offset.toInt()).toChar()
+            } else {
+                it
+            }
+        }.joinToString("")
+    }
+
+    private fun monoalphabeticCipher(text: String, encrypt: Boolean): String {
+        /*val key = "QWERTYUIOPASDFGHJKLZXCVBNM" // A simple substitution key
+        val lookup = ('A'..'Z').zip(key).toMap()
+
+        return text.uppercase().map {
+            lookup[it] ?: it
+        }.joinToString("")*/
+        val alphabet = ('A'..'Z').toList()
+        return alphabet.shuffled(Random(System.currentTimeMillis())).joinToString("")
+    }
+
+    private fun generateRandomKey(): String {
+        val alphabet = ('A'..'Z').toList()
+        return alphabet.shuffled(Random(System.currentTimeMillis())).joinToString("")
+    }
+
+    private fun affineCipher(text: String, encrypt: Boolean): String {
+        val a = 5
+        val b = 8
+        val m = 26
+        val aInv = 21 // multiplicative inverse of 5 mod 26
+
+        return text.map {
+            if (it.isLetter()) {
+                val offset = if (it.isUpperCase()) 'A' else 'a'
+                val x = it - offset
+                val transformed = if (encrypt) {
+                    (a * x + b) % m
+                } else {
+                    (aInv * (x - b + m)) % m
+                }
+                (transformed + offset.toInt()).toChar()
+            } else {
+                it
+            }
+        }.joinToString("")
+    }
+
+    private fun playfairCipher(text: String, encrypt: Boolean): String {
+        // Simplified placeholder logic for demonstration
+        return text
+    }
+
+    private fun vigenereCipher(text: String, keyword: String, encrypt: Boolean): String {
+        val key = keyword.uppercase()
+        return text.mapIndexed { index, char ->
+            if (char.isLetter()) {
+                val offset = if (char.isUpperCase()) 'A' else 'a'
+                val shift = if (encrypt) key[index % key.length] - 'A' else 'A' - key[index % key.length]
+                ((char - offset + shift + 26) % 26 + offset.toInt()).toChar()
+            } else {
+                char
+            }
+        }.joinToString("")
+    }
+
+    private fun vernamCipher(text: String, key: String, encrypt: Boolean): String {
+        return text.mapIndexed { index, char ->
+            char xor key[index % key.length]
+        }.joinToString("")
+    }
+
+    private infix fun Char.xor(other: Char): Char {
+        return this.code.xor(other.code).toChar()
+    }
+
+    private fun sha1Hash(text: String): String {
+        val md = MessageDigest.getInstance("SHA-1")
+        val hash = md.digest(text.toByteArray())
+        return hash.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun desEncrypt(text: String): String {
+        // Placeholder logic for DES encryption
+        return text
+    }
+
+    private fun desDecrypt(text: String): String {
+        // Placeholder logic for DES decryption
+        return text
+    }
+}
+/*
+override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -165,4 +319,5 @@ class MainActivity : AppCompatActivity() {
         val encrypted = cipher.doFinal(text.toByteArray())
         return encrypted.joinToString("") { "%02x".format(it) }
     }
-}
+
+ */

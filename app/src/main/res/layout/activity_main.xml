@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
     <EditText
@@ -10,31 +12,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter text"
-        android:layout_margin="16dp"/>
+        android:inputType="text"/>
 
     <Spinner
         android:id="@+id/algorithmSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/inputText"
-        android:layout_margin="16dp"/>
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/encryptButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Encrypt"
-        android:layout_below="@id/algorithmSpinner"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:text="Encrypt"/>
+
+    <Button
+        android:id="@+id/decryptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Decrypt"/>
 
     <TextView
         android:id="@+id/outputText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/encryptButton"
-        android:layout_margin="16dp"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:layout_marginTop="16dp"
+        android:text="Output"
+        android:textSize="16sp"/>
 
-</RelativeLayout>
+</LinearLayout>
