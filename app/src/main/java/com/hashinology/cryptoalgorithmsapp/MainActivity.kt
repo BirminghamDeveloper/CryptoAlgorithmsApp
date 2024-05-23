@@ -26,8 +26,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        error deleted
-
         inputText = findViewById(R.id.inputText)
         outputText = findViewById(R.id.outputText)
         encryptButton = findViewById(R.id.encryptButton)
@@ -90,12 +88,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun monoalphabeticCipher(text: String, encrypt: Boolean): String {
-        /*val key = "QWERTYUIOPASDFGHJKLZXCVBNM" // A simple substitution key
-        val lookup = ('A'..'Z').zip(key).toMap()
-
-        return text.uppercase().map {
-            lookup[it] ?: it
-        }.joinToString("")*/
         val alphabet = ('A'..'Z').toList()
         return alphabet.shuffled(Random(System.currentTimeMillis())).joinToString("")
     }
