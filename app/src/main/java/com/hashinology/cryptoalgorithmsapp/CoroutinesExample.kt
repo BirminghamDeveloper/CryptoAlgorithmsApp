@@ -1,8 +1,10 @@
 package com.hashinology.cryptoalgorithmsapp
 
-class CoroutinesExample {
+import android.content.Context
+
+class CoroutinesExample(val context: Context) {
     val value: String? = null
-    getSomething()
+    getSomething(context)
 }
 public fun getSomething(): String{
     return ""
