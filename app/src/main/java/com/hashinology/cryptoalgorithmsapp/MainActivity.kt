@@ -6,10 +6,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -32,8 +30,10 @@ class MainActivity : AppCompatActivity() {
         decryptButton = findViewById(R.id.decryptButton)
         algorithmSpinner = findViewById(R.id.algorithmSpinner)
 
-        val algorithms = arrayOf("Shift Cipher", "Monoalphabetic Cipher", "Affine Cipher",
-            "Playfair Cipher", "Vigenere Cipher", "Vernam Cipher", "SHA-1", "DES")
+        val algorithms = arrayOf(
+            "Shift Cipher", "Monoalphabetic Cipher", "Affine Cipher",
+            "Playfair Cipher", "Vigenere Cipher", "Vernam Cipher", "SHA-1", "DES"
+        )
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, algorithms)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
 
         encryptButton.setOnClickListener {
             val text = inputText.text.toString()
+            if (text.isEmpty()) {
+                Toast.makeText(this, "Please enter text to encrypt", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val algorithm = algorithmSpinner.selectedItem.toString()
             val result = when (algorithm) {
                 "Shift Cipher" -> shiftCipher(text, encrypt = true)
@@ -58,6 +62,10 @@ class MainActivity : AppCompatActivity() {
 
         decryptButton.setOnClickListener {
             val text = inputText.text.toString()
+            if (text.isEmpty()) {
+                Toast.makeText(this, "Please enter text to decrypt", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val algorithm = algorithmSpinner.selectedItem.toString()
             val result = when (algorithm) {
                 "Shift Cipher" -> shiftCipher(text, encrypt = false)
@@ -89,12 +97,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun monoalphabeticCipher(text: String, encrypt: Boolean): String {
         val alphabet = ('A'..'Z').toList()
-        return alphabet.shuffled(Random(System.currentTimeMillis())).joinToString("")
-    }
-
-    private fun generateRandomKey(): String {
-        val alphabet = ('A'..'Z').toList()
-        return alphabet.shuffled(Random(System.currentTimeMillis())).joinToString("")
+        val shuffledAlphabet = if (encrypt) alphabet.shuffled(Random(System.currentTimeMillis())) else alphabet
+        val substitutionMap = alphabet.zip(shuffledAlphabet).toMap()
+        return text.uppercase().map {
+            substitutionMap[it] ?: it
+        }.joinToString("")
     }
 
     private fun affineCipher(text: String, encrypt: Boolean): String {
@@ -120,7 +127,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun playfairCipher(text: String, encrypt: Boolean): String {
-        // Simplified placeholder logic for demonstration
+        // Placeholder logic for demonstration
+        // You need to implement Playfair cipher here
         return text
     }
 
@@ -154,13 +162,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun desEncrypt(text: String): String {
-        // Placeholder logic for DES encryption
-        return text
+        val key = "your-key" // replace with your key
+        val secretKeySpec = SecretKeySpec(key.toByteArray(), "DES")
+        val cipher = Cipher.getInstance("DES/ECB/PKCS5Padding")
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec)
+        val encrypted = cipher.doFinal(text.toByteArray())
+        return encrypted.joinToString("") { "%02x".format(it) }
     }
 
     private fun desDecrypt(text: String): String {
-        // Placeholder logic for DES decryption
-        return text
+        val key = "your-key" // replace with your key
+        val secretKeySpec = SecretKeySpec(key.toByteArray(), "DES")
+        val cipher = Cipher.getInstance("DES/ECB/PKCS5Padding")
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec)
+        val encryptedBytes = text.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+        val decrypted = cipher.doFinal(encryptedBytes)
+        return String(decrypted)
     }
 }
 /*
