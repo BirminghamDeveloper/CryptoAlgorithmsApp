@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var decryptButton: Button
     private lateinit var algorithmSpinner: Spinner
 
+    private var storedSha1Hash: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,7 +55,11 @@ class MainActivity : AppCompatActivity() {
                 "Playfair Cipher" -> playfairCipher(text, encrypt = true)
                 "Vigenere Cipher" -> vigenereCipher(text, "KEYWORD", encrypt = true)
                 "Vernam Cipher" -> vernamCipher(text, "KEYWORD", encrypt = true)
-                "SHA-1" -> sha1Hash(text)
+                "SHA-1" -> {
+                    val hash = sha1Hash(text)
+                    storedSha1Hash = hash
+                    hash
+                }
                 "DES" -> desEncrypt(text)
                 else -> ""
             }
@@ -74,7 +80,13 @@ class MainActivity : AppCompatActivity() {
                 "Playfair Cipher" -> playfairCipher(text, encrypt = false)
                 "Vigenere Cipher" -> vigenereCipher(text, "KEYWORD", encrypt = false)
                 "Vernam Cipher" -> vernamCipher(text, "KEYWORD", encrypt = false)
-                "SHA-1" -> "Decryption not available"
+                "SHA-1" -> {
+                    if (storedSha1Hash != null && sha1Hash(text) == storedSha1Hash) {
+                        "Input matches the stored SHA-1 hash"
+                    } else {
+                        "Input does not match the stored SHA-1 hash"
+                    }
+                }
                 "DES" -> desDecrypt(text)
                 else -> ""
             }
