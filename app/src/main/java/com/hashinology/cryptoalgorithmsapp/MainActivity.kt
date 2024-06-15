@@ -8,6 +8,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -18,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var outputText: TextView
     private lateinit var encryptButton: Button
     private lateinit var decryptButton: Button
+    private lateinit var saveButton: Button
+    private lateinit var loadButton: Button
     private lateinit var algorithmSpinner: Spinner
 
     private var storedSha1Hash: String? = null
@@ -30,6 +33,8 @@ class MainActivity : AppCompatActivity() {
         outputText = findViewById(R.id.outputText)
         encryptButton = findViewById(R.id.encryptButton)
         decryptButton = findViewById(R.id.decryptButton)
+        saveButton = findViewById(R.id.saveButton)
+        loadButton = findViewById(R.id.loadButton)
         algorithmSpinner = findViewById(R.id.algorithmSpinner)
 
         val algorithms = arrayOf(
@@ -91,6 +96,19 @@ class MainActivity : AppCompatActivity() {
                 else -> ""
             }
             outputText.text = result
+        }
+
+        saveButton.setOnClickListener {
+            val text = outputText.text.toString()
+            if (text.isEmpty()) {
+                Toast.makeText(this, "No text to save", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            saveToFile(text)
+        }
+
+        loadButton.setOnClickListener {
+            loadFromFile()
         }
     }
 
@@ -191,7 +209,27 @@ class MainActivity : AppCompatActivity() {
         val decrypted = cipher.doFinal(encryptedBytes)
         return String(decrypted)
     }
+
+    private fun saveToFile(text: String) {
+        val fileName = "encrypted_text.txt"
+        val file = File(filesDir, fileName)
+        file.writeText(text)
+        Toast.makeText(this, "Encrypted text saved to $fileName", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun loadFromFile() {
+        val fileName = "encrypted_text.txt"
+        val file = File(filesDir, fileName)
+        if (file.exists()) {
+            val text = file.readText()
+            outputText.text = text
+            Toast.makeText(this, "Encrypted text loaded from $fileName", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "No saved encrypted text found", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
+
 /*
 override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
