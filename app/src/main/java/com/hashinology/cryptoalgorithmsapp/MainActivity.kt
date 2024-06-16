@@ -15,13 +15,13 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var inputText: EditText
+    /*private lateinit var inputText: EditText
     private lateinit var outputText: TextView
     private lateinit var encryptButton: Button
     private lateinit var decryptButton: Button
     private lateinit var saveButton: Button
     private lateinit var loadButton: Button
-    private lateinit var algorithmSpinner: Spinner
+    private lateinit var algorithmSpinner: Spinner*/
 
     private var storedSha1Hash: String? = null
 
